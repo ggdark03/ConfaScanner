@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Facturas de gastos – Confa</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f4f6fa;--card:#fff;--tx:#1b2430;--mut:#5d6b7e;--bd:#d9e0ea;--pri:#0b5cad;--pri-t:#fff;--ok:#1b7f4b;--bad:#c0392b;--toll:#0b5cad;--gas:#d9730d;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151c;--card:#1a212b;--tx:#e8edf3;--mut:#9aa7b8;--bd:#2c3644;--pri:#4a9eed;--pri-t:#07131f;--ok:#4cc38a;--bad:#ff7b6b;--toll:#4a9eed;--gas:#f0a04b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10151c;--card:#1a212b;--tx:#e8edf3;--mut:#9aa7b8;--bd:#2c3644;--pri:#4a9eed;--pri-t:#07131f;--ok:#4cc38a;--bad:#ff7b6b;--toll:#4a9eed;--gas:#f0a04b;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:1.35rem;margin:0 0 2px}h2{font-size:1.1rem;margin:0}
+.sub{color:var(--mut);margin:0 0 14px;font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:14px}
+label{display:block;font-size:.85rem;color:var(--mut);margin:8px 0 3px;font-weight:600}
+input,select,textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;cursor:pointer;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:12px 14px;font-weight:600}
+button.p{background:var(--pri);color:var(--pri-t);border-color:var(--pri)}
+button.d{color:var(--bad)}button.big{width:100%;padding:14px;font-size:1.02rem}
+.sec{border-left:6px solid var(--c);}
+.sec.t{--c:var(--toll)}.sec.g{--c:var(--gas)}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.tot{font-weight:700;color:var(--c)}
+.it{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--bd)}
+.it img{width:56px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--bd);cursor:pointer;background:#fff}
+.it .i{flex:1;min-width:0}.it b{display:block}.it small{color:var(--mut)}
+.badge{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--bd);color:var(--mut);margin-left:6px}
+.empty{color:var(--mut);padding:8px 0;font-size:.92rem}
+.grand{display:flex;justify-content:space-between;font-size:1.15rem;font-weight:800}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:9;padding:0}
+.ov.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:560px;max-height:94vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.pick button{padding:22px 8px;font-size:1rem;display:flex;flex-direction:column;gap:6px;align-items:center}
+.pick span{font-size:2rem}
+.prev{width:100%;max-height:46vh;object-fit:contain;background:#888;border-radius:10px;border:1px solid var(--bd)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.seg button.on{background:var(--pri);color:var(--pri-t);border-color:var(--pri)}
+.msg{color:var(--mut);font-size:.85rem;margin:6px 0}
+.pa{display:none}
+@media print{
+ body{background:#fff;color:#000}main,.ov{display:none!important}
+ .pa{display:block;font:12pt/1.4 Arial,sans-serif;color:#000}
+ .pa h1{font-size:16pt}.pa h2{font-size:13pt;margin:16px 0 6px;border-bottom:2px solid #000}
+ .pa table{width:100%;border-collapse:collapse;margin-bottom:8px}.pa td,.pa th{border:1px solid #999;padding:4px 6px;font-size:10pt;text-align:left}
+ .pa .g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.pa .g div{break-inside:avoid;font-size:9pt}
+ .pa .g img{width:100%;border:1px solid #999}.pa .sg{margin-top:40px;display:flex;gap:40px}.pa .sg div{flex:1;border-top:1px solid #000;padding-top:4px}
+}
+</style>
+</head>
+<body>
+<main>
+ <h1>🧾 Facturas de gastos</h1>
+ <p class="sub">Escanea tus facturas y entrégalas ordenadas a Tesorería.</p>
+
+ <div class="card">
+  <h2>Mis datos</h2>
+  <label for="nom">Nombre completo</label><input id="nom" placeholder="Ej: Juan Pérez">
+  <div class="row">
+   <div><label for="sede">Sede</label><select id="sede"><option>La Rochela</option><option>Cafan</option></select></div>
+   <div><label for="mes">Mes a presentar</label><input id="mes" type="month"></div>
+  </div>
+ </div>
+
+ <div class="card sec t">
+  <div class="hd"><h2>1. Peajes</h2><span class="tot" id="tt"></span></div>
+  <p class="msg" style="margin-top:0">Manizales ⇄ La Rochela · físicos o digitales</p>
+  <div id="lt"></div>
+  <button class="p big" data-add="peaje">＋ Agregar factura de peaje</button>
+ </div>
+
+ <div class="card sec g">
+  <div class="hd"><h2>2. Gasolina</h2><span class="tot" id="tg"></span></div>
+  <p class="msg" style="margin-top:0">Facturas físicas del tanqueo</p>
+  <div id="lg"></div>
+  <button class="p big" data-add="gasolina">＋ Agregar factura de gasolina</button>
+ </div>
+
+ <div class="card">
+  <div class="grand"><span>TOTAL A PRESENTAR</span><span id="tot"></span></div>
+  <p class="msg" id="cnt"></p>
+  <button class="p big" id="print">🖨️ Imprimir / Guardar PDF para Tesorería</button>
+ </div>
+</main>
+
+<!-- Agregar -->
+<div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
+<input type="file" id="fcam" accept="image/*" capture="environment" hidden>
+<input type="file" id="fgal" accept="image/*" hidden>
+<div class="pa" id="pa"></div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n||0);
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>{const d=new Date();return d.toISOString().slice(0,10)};
+let recs=[],dbh=null,cfg={nom:'',sede:'La Rochela',mes:today().slice(0,7)};
+try{const c=JSON.parse(localStorage.getItem('cfg')||'null');if(c)cfg=Object.assign(cfg,c)}catch(e){}
+function saveCfg(){try{localStorage.setItem('cfg',JSON.stringify(cfg))}catch(e){}}
+
+/* ---------- Almacenamiento (IndexedDB, con respaldo en memoria) ---------- */
+function openDB(){return new Promise(res=>{try{const r=indexedDB.open('confa-gastos',1);
+ r.onupgradeneeded=()=>r.result.createObjectStore('r',{keyPath:'id'});
+ r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}})}
+const store=m=>dbh.transaction('r',m).objectStore('r');
+function dbAll(){return new Promise(res=>{if(!dbh)return res([]);try{const q=store('readonly').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([])}catch(e){res([])}})}
+function dbPut(r){try{if(dbh)store('readwrite').put(r)}catch(e){}}
+function dbDel(id){try{if(dbh)store('readwrite').delete(id)}catch(e){}}
+
+/* ---------- Escáner: recorte automático del papel + mejora ---------- */
+async function loadBmp(f){
+ try{return await createImageBitmap(f,{imageOrientation:'from-image'})}
+ catch(e){return await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=URL.createObjectURL(f)})}}
+function otsu(g){const h=new Array(256).fill(0);for(let i=0;i<g.length;i++)h[g[i]]++;
+ let tot=g.length,sum=0;for(let i=0;i<256;i++)sum+=i*h[i];
+ let sB=0,wB=0,mx=0,t=128;
+ for(let i=0;i<256;i++){wB+=h[i];if(!wB)continue;const wF=tot-wB;if(!wF)break;sB+=i*h[i];
+  const mB=sB/wB,mF=(sum-sB)/wF,v=wB*wF*(mB-mF)*(mB-mF);if(v>mx){mx=v;t=i}}
+ return t}
+async function scan(file){
+ const b=await loadBmp(file),W=b.width,H=b.height;
+ const k=Math.min(1,1500/Math.max(W,H)),w=Math.round(W*k),h=Math.round(H*k);
+ const full=document.createElement('canvas');full.width=w;full.height=h;
+ const fx=full.getContext('2d',{willReadFrequently:true});fx.drawImage(b,0,0,w,h);
+ const orig=full.toDataURL('image/jpeg',.7);
+ // detección en miniatura
+ const s=Math.min(1,300/Math.max(w,h)),sw=Math.round(w*s),sh=Math.round(h*s);
+ const sc=document.createElement('canvas');sc.width=sw;sc.height=sh;
+ const sx=sc.getContext('2d',{willReadFrequently:true});sx.filter='blur(2px)';sx.drawImage(full,0,0,sw,sh);
+ const d=sx.getImageData(0,0,sw,sh).data,g=new Uint8Array(sw*sh);
+ for(let i=0;i<g.length;i++)g[i]=.299*d[i*4]+.587*d[i*4+1]+.114*d[i*4+2];
+ const t=otsu(g),rows=new Array(sh).fill(0),cols=new Array(sw).fill(0);
+ for(let y=0;y<sh;y++)for(let x=0;x<sw;x++)if(g[y*sw+x]>t){rows[y]++;cols[x]++}
+ const rm=Math.max(...rows),cm=Math.max(...cols);
+ const first=(a,m)=>a.findIndex(v=>v>=m*.4),last=(a,m)=>{for(let i=a.length-1;i>=0;i--)if(a[i]>=m*.4)return i;return a.length-1};
+ let x0=first(cols,cm),x1=last(cols,cm),y0=first(rows,rm),y1=last(rows,rm);
+ const pad=.015;x0=Math.max(0,x0/sw-pad);x1=Math.min(1,(x1+1)/sw+pad);y0=Math.max(0,y0/sh-pad);y1=Math.min(1,(y1+1)/sh+pad);
+ let area=(x1-x0)*(y1-y0),found=area>.12&&area<.97;
+ if(!found){x0=0;y0=0;x1=1;y1=1}
+ const cw=Math.round((x1-x0)*w),ch=Math.round((y1-y0)*h);
+ const id=fx.getImageData(Math.round(x0*w),Math.round(y0*h),cw,ch),p=id.data;
+ // mejora tipo escáner: papel blanco, texto negro
+ const hist=new Array(256).fill(0),gr=new Uint8Array(cw*ch);
+ for(let i=0;i<gr.length;i++){const v=.299*p[i*4]+.587*p[i*4+1]+.114*p[i*4+2];gr[i]=v;hist[v|0]++}
+ const pc=q=>{let a=0;const n=gr.length*q;for(let i=0;i<256;i++){a+=hist[i];if(a>=n)return i}return 255};
+ const lo=pc(.01),hi=Math.max(lo+20,pc(.8));
+ for(let i=0;i<gr.length;i++){let v=(gr[i]-lo)/(hi-lo);v=v<0?0:v>1?1:v;v=Math.pow(v,1.35)*255;p[i*4]=p[i*4+1]=p[i*4+2]=v;p[i*4+3]=255}
+ const oc=document.createElement('canvas');oc.width=cw;oc.height=ch;oc.getContext('2d').putImageData(id,0,0);
+ return{scan:oc.toDataURL('image/jpeg',.72),orig,found};
+}
+
+/* ---------- Interfaz ---------- */
+let cur=null; // {cat,scan,orig,mode}
+const ov=$('#ov'),sheet=$('#sheet');
+const open=h=>{sheet.innerHTML=h;ov.classList.add('on')},close=()=>{ov.classList.remove('on');cur=null};
+ov.addEventListener('click',e=>{if(e.target===ov)close()});
+
+function chooser(cat){
+ cur={cat};
+ open(`<h2>${cat==='peaje'?'Factura de peaje':'Factura de gasolina'}</h2>
+ <p class="msg">¿Cómo quieres agregar la factura?</p>
+ <div class="pick"><button class="p" id="bcam"><span>📷</span>Tomar foto</button><button id="bgal"><span>🖼️</span>Elegir de galería</button></div>
+ <p class="msg">💡 Pon la factura sobre una superficie oscura y plana. La página recorta solo el papel automáticamente.</p>
+ <button class="big" id="bcl">Cancelar</button>`);
+ $('#bcam').onclick=()=>$('#fcam').click();$('#bgal').onclick=()=>$('#fgal').click();$('#bcl').onclick=close;
+}
+async function onFile(e){
+ const f=e.target.files[0];e.target.value='';if(!f||!cur)return;
+ const cat=cur.cat;open('<h2>Escaneando…</h2><p class="msg">Recortando y mejorando la imagen.</p>');
+ try{const r=await scan(f);cur={cat,scan:r.scan,orig:r.orig,found:r.found,mode:'scan'};form()}
+ catch(err){open('<h2>No se pudo leer la imagen</h2><p class="msg">Intenta con otra foto.</p><button class="big" id="bcl">Cerrar</button>');$('#bcl').onclick=close}
+}
+function form(){
+ const c=cur,peaje=c.cat==='peaje';
+ open(`<h2>${peaje?'Peaje':'Gasolina'} · revisar y guardar</h2>
+ <img class="prev" id="pv" src="${c.mode==='scan'?c.scan:c.orig}" alt="Vista previa de la factura">
+ <div class="seg"><button data-m="scan" class="${c.mode==='scan'?'on':''}">📄 Escaneada</button><button data-m="orig" class="${c.mode==='orig'?'on':''}">🖼️ Original</button></div>
+ <p class="msg">${c.found?'✅ Papel detectado y recortado.':'⚠️ No se detectó bien el papel; se usó la foto completa. Puedes repetir la foto.'}</p>
+ <div class="row"><div><label for="fd">Fecha</label><input type="date" id="fd" value="${today()}"></div>
+ <div><label for="fv">Valor (COP)</label><input type="number" id="fv" inputmode="numeric" placeholder="Ej: 12500"></div></div>
+ ${peaje?`<label for="ft">Tipo de factura</label><select id="ft"><option value="Físico">Físico (papel)</option><option value="Digital">Digital (pantalla / correo)</option></select>`:''}
+ <label for="fn">${peaje?'Peaje (opcional)':'Estación (opcional)'}</label><input id="fn" placeholder="${peaje?'Ej: Peaje Tres Puertas':'Ej: Terpel Chinchiná'}">
+ <div class="row" style="margin-top:14px"><button id="bre">↻ Repetir foto</button><button class="p" id="bsv">Guardar</button></div>
+ <button class="big" id="bcl" style="margin-top:8px">Cancelar</button>`);
+ sheet.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{c.mode=b.dataset.m;const f={d:$('#fd').value,v:$('#fv').value,n:$('#fn').value,t:$('#ft')&&$('#ft').value};form();$('#fd').value=f.d;$('#fv').value=f.v;$('#fn').value=f.n;if(f.t)$('#ft').value=f.t});
+ $('#bre').onclick=()=>chooser(c.cat);$('#bcl').onclick=close;
+ $('#bsv').onclick=()=>{
+  const v=parseInt($('#fv').value,10),d=$('#fd').value;
+  if(!d||!v||v<=0){alert('Escribe la fecha y el valor de la factura.');return}
+  const r={id:Date.now()+''+Math.floor(Math.random()*999),cat:c.cat,fecha:d,valor:v,nota:$('#fn').value.trim(),tipo:peaje?$('#ft').value:'Físico',img:c.mode==='scan'?c.scan:c.orig};
+  recs.push(r);dbPut(r);close();render();
+ };
+}
+function view(id){const r=recs.find(x=>x.id===id);if(!r)return;
+ open(`<img class="prev" style="max-height:78vh" src="${r.img}" alt="Factura"><button class="big" id="bcl" style="margin-top:10px">Cerrar</button>`);$('#bcl').onclick=close}
+
+const fdate=s=>{const[a,b,c]=s.split('-');return `${c}/${b}/${a}`};
+const mine=cat=>recs.filter(r=>r.cat===cat&&r.fecha.slice(0,7)===cfg.mes).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+const sum=a=>a.reduce((s,r)=>s+r.valor,0);
+function list(cat,el){
+ const a=mine(cat);
+ el.innerHTML=a.length?a.map(r=>`<div class="it"><img src="${r.img}" data-v="${r.id}" alt="Factura">
+  <div class="i"><b>${money(r.valor)}</b><small>${fdate(r.fecha)}${cat==='peaje'?`<span class="badge">${r.tipo}</span>`:''}${r.nota?' · '+esc(r.nota):''}</small></div>
+  <button class="d" data-x="${r.id}" aria-label="Eliminar">🗑</button></div>`).join(''):'<div class="empty">Aún no hay facturas este mes.</div>';
+ return a;
+}
+function render(){
+ const t=list('peaje',$('#lt')),g=list('gasolina',$('#lg'));
+ $('#tt').textContent=money(sum(t));$('#tg').textContent=money(sum(g));
+ $('#tot').textContent=money(sum(t)+sum(g));$('#cnt').textContent=`${t.length} peaje(s) + ${g.length} factura(s) de gasolina`;
+ const mesTxt=new Date(cfg.mes+'-15').toLocaleDateString('es-CO',{month:'long',year:'numeric'});
+ const tbl=a=>a.length?`<table><tr><th>#</th><th>Fecha</th><th>Tipo</th><th>Detalle</th><th>Valor</th></tr>${a.map((r,i)=>`<tr><td>${i+1}</td><td>${fdate(r.fecha)}</td><td>${r.tipo}</td><td>${esc(r.nota)}</td><td>${money(r.valor)}</td></tr>`).join('')}<tr><th colspan="4">Subtotal</th><th>${money(sum(a))}</th></tr></table><div class="g">${a.map((r,i)=>`<div><img src="${r.img}" alt=""> #${i+1} · ${fdate(r.fecha)} · ${money(r.valor)}</div>`).join('')}</div>`:'<p>Sin facturas.</p>';
+ $('#pa').innerHTML=`<h1>Relación de gastos de transporte – Confa</h1><p><b>Funcionario:</b> ${esc(cfg.nom)||'________________'} &nbsp; <b>Sede:</b> ${esc(cfg.sede)} &nbsp; <b>Periodo:</b> ${mesTxt}</p>
+ <h2>1. Peajes (Manizales – La Rochela)</h2>${tbl(t)}<h2>2. Gasolina</h2>${tbl(g)}
+ <h2>Total a presentar: ${money(sum(t)+sum(g))}</h2><div class="sg"><div>Firma del funcionario</div><div>Recibido por Tesorería</div></div>`;
+}
+
+document.addEventListener('click',e=>{
+ const a=e.target.closest('[data-add]');if(a)return chooser(a.dataset.add);
+ const v=e.target.closest('[data-v]');if(v)return view(v.dataset.v);
+ const x=e.target.closest('[data-x]');if(x&&confirm('¿Eliminar esta factura?')){recs=recs.filter(r=>r.id!==x.dataset.x);dbDel(x.dataset.x);render()}
+});
+$('#fcam').onchange=onFile;$('#fgal').onchange=onFile;
+$('#print').onclick=()=>{render();window.print()};
+[['nom','nom'],['sede','sede'],['mes','mes']].forEach(([i,k])=>{const el=$('#'+i);el.value=cfg[k];el.oninput=()=>{cfg[k]=el.value||cfg[k];saveCfg();render()}});
+openDB().then(async d=>{dbh=d;recs=await dbAll();render()});
+render();
+})();
+</script>
+</body>
+</html>
