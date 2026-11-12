@@ -215,9 +215,9 @@ function render(){
  $('#tot').textContent=money(sum(t)+sum(g));$('#cnt').textContent=`${t.length} peaje(s) + ${g.length} factura(s) de gasolina`;
  const mesTxt=new Date(cfg.mes+'-15').toLocaleDateString('es-CO',{month:'long',year:'numeric'});
  const tbl=a=>a.length?`<table><tr><th>#</th><th>Fecha</th><th>Tipo</th><th>Detalle</th><th>Valor</th></tr>${a.map((r,i)=>`<tr><td>${i+1}</td><td>${fdate(r.fecha)}</td><td>${r.tipo}</td><td>${esc(r.nota)}</td><td>${money(r.valor)}</td></tr>`).join('')}<tr><th colspan="4">Subtotal</th><th>${money(sum(a))}</th></tr></table><div class="g">${a.map((r,i)=>`<div><img src="${r.img}" alt=""> #${i+1} · ${fdate(r.fecha)} · ${money(r.valor)}</div>`).join('')}</div>`:'<p>Sin facturas.</p>';
- $('#pa').innerHTML=`<h1>Relación de gastos de transporte – Confa</h1><p><b>Funcionario:</b> ${esc(cfg.nom)||'________________'} &nbsp; <b>Sede:</b> ${esc(cfg.sede)} &nbsp; <b>Periodo:</b> ${mesTxt}</p>
+ $('#pa').innerHTML=`<h1>Facturas de gastos</h1><p><b>Funcionario:</b> ${esc(cfg.nom)||'________________'} &nbsp; <b>Sede:</b> ${esc(cfg.sede)} &nbsp; <b>Periodo:</b> ${mesTxt}</p>
  <h2>1. Peajes (Manizales – La Rochela)</h2>${tbl(t)}<h2>2. Gasolina</h2>${tbl(g)}
- <h2>Total a presentar: ${money(sum(t)+sum(g))}</h2><div class="sg"><div>Firma del funcionario</div><div>Recibido por Tesorería</div></div>`;
+ <h2>Total a presentar: ${money(sum(t)+sum(g))}</h2>`;
 }
 
 document.addEventListener('click',e=>{
